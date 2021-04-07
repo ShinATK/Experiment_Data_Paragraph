@@ -4,8 +4,7 @@ import numpy as np
 import os
 import math
 
-
-def load_files(path='/Users/mac/Documents/Data/CSV/'):
+def load_files(path='./Data/CSV/'):
     '''
 
     :param path:
@@ -14,7 +13,6 @@ def load_files(path='/Users/mac/Documents/Data/CSV/'):
 
     # 读取 path 下的所有文件的文件名
     files_name = os.listdir(path)
-    # print(files_name)
 
     # 存储后缀名为csv的文件名称
     files_csv = []
@@ -28,7 +26,7 @@ def load_files(path='/Users/mac/Documents/Data/CSV/'):
 
     return files_csv
 
-def load_csv_data(filename, path='/Users/mac/Documents/Data/CSV/'):
+def load_csv_data(filename, path='./Data/CSV/'):
     load_file_csv = open(path + filename) # 打开csv文件
     read_file_csv = csv.reader(load_file_csv) # 读取csv文件
     data = list(read_file_csv)
@@ -42,7 +40,7 @@ def load_csv_data(filename, path='/Users/mac/Documents/Data/CSV/'):
 
     return x_Voltage, y_Current
 
-def draw_graph_csv(x, y, csvname):
+def draw_graph_csv(x, y, csvname, delt_x=20):
 
     # 利用导入的csv数据生成设定好的图像（一个）
     fig, ax = plt.subplots(1, 1)
@@ -53,43 +51,18 @@ def draw_graph_csv(x, y, csvname):
 
     plt.plot(x, y, linestyle='--', color='green', marker='o')
 
-    plt.xlim([-65, 25])
+    plt.xlim([int(min(x))+5, int(max(x))+5])
 
-    # y轴的坐标值需要根据实际的实验数据自动确定
-    ymin = [1e-8, 5e-9, 1e-9, 5e-10, 1e-10, 5e-11, 1e-11, 5e-12, 1e-12]
-    ymax = [1e-8, 5e-8, 1e-7, 5e-7, 1e-6, 5e-6, 1e-5, 5e-5, 1e-4]
-
-    ymin.sort(reverse=True)  # ymin 需要升序排列，从而保证找出 ymin 中小于数据最小值中的最大值
-    ymax.sort()  # ymax 需要降序排列，从而保证找出 ymax 中的大于数据最大值中的最小值
-
-    temp_min = min(y)
-    temp_max = max(y)
-
-    for each in ymin:
-        if each <= temp_min:
-            temp_min = each
-            break
-        else:
-            continue
-
-    for each in ymax:
-        if each >= temp_max:
-            temp_max = each
-            break
-        else:
-            continue
+    temp_min = 10**(math.log(min(y), 10) - 1)
+    temp_max = 10**(math.log(max(y), 10) + 1)
 
     plt.ylim([temp_min, temp_max])
 
-    my_x_ticks = np.arange(-60, 40, 20)
+    my_x_ticks = np.arange(int(min(x)), int(max(x)) + delt_x, delt_x)
     plt.xticks(my_x_ticks)
-    # plt.xticks([-60, -40, -20, 0, 20])
 
     # 纵轴修改为对数形式
     ax.semilogy()
-
-    # 设定图像标题
-    # plt.title(name)
 
     # 设定图像的轴坐标名称
     font1 = {'family': 'Times New Roman',
@@ -101,29 +74,12 @@ def draw_graph_csv(x, y, csvname):
     plt.xlabel('V$_g$$_s$ (V)', font1)
     plt.ylabel('-I$_s$$_d$ (A)', font1)
 
+    # 设定图像标题
     plt.title(csvname[0:-4])
 
-    plt.draw()
-    plt.pause(0.2)
-
-    # while True:
-    #
-    #     temp = input('是否人为设定上下限（Y/N）:')
-    #     # 问题：如何重新设置上下限
-    #     if temp == 'Y' or temp == 'y':
-    #         y_min = input('请输入y轴最小值：')
-    #         y_max = input('请输入y轴最大值：')
-    #         plt.ylim([y_min, y_max])
-    #         plt.close()
-    #     elif temp == 'N' or temp == 'n':
-    #         break
-    #     else:
-    #         print('输入错误')
-
-    # plt.show()
-
     # 这里的参数更改为图像存放位置
-    plt.savefig('/Users/mac/Documents/Data/CSV_Fig/' + csvname.split('.', 1)[0] + '.png', dpi=720)
+    plt.savefig('./Fig/CSV_Fig/' + csvname.split('.', 1)[0] + '.png', dpi=720)
+    plt.show()
     plt.close()
     return 0
 
