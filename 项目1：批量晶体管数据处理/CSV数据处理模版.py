@@ -159,6 +159,7 @@ if __name__ == '__main__':
         I_onoff.append(math.log(param1_I[0] / param1_I[-3], 10))
         I_onoff.append(math.log(param1_I[0] / param1_I[-4], 10))
         # u.sort(reverse=True)
+        # 迁移率具体数值与直接用origin计算得出的结果相差一倍，无法定量分析，但是不同片子的迁移率之间相对优劣的定性分析是可行的
         print(each_name + '前三组迁移率为:%0.2f; %0.2f, %0.2f, %0.2f, %0.2f'
               % (u[0], u[1], u[2], u[3], u[4]))
         print(each_name + '开关比为：%0.2f; %0.2f, %0.2f, %0.2f, %0.2f \n'
