@@ -24,19 +24,22 @@ def load_files(path='./Data/CSV/'):
         if files_extension == '.csv':
             files_csv.append(each)
 
+    files_csv.sort()
     return files_csv
 
 def load_csv_data(filename, path='./Data/CSV/'):
     load_file_csv = open(path + filename) # 打开csv文件
     read_file_csv = csv.reader(load_file_csv) # 读取csv文件
     data = list(read_file_csv)
-
     x_Voltage = list()
     y_Current = list()
 
+    # 在csv文件中，需要的栅极电压与源极电流存放范围在1到82行(从0开始)
+    # 此处82需要根据每个人测量IV曲线时设置的步长考虑一共会有多少组数据
+    # 试试直接读取对应某一列，先判断是否为空，再决定是否执行电压电流的存储
     for i in range(1, 82):
-        x_Voltage.append(float(data[i][6]))
-        y_Current.append(abs(float(data[i][4])))
+        x_Voltage.append(float(data[i][6])) # 栅极电压在第6列
+        y_Current.append(abs(float(data[i][4]))) # 源极电流在第4列
 
     return x_Voltage, y_Current
 
@@ -51,11 +54,12 @@ def draw_graph_csv(x, y, csvname, delt_x=20):
 
     plt.plot(x, y, linestyle='--', color='green', marker='o')
 
-    plt.xlim([int(min(x))+5, int(max(x))+5])
+    # 自动根据导入数据设置横坐标范围，取整然后左右移动5个单位
+    plt.xlim([int(min(x))-5, int(max(x))+5])
 
+    # 自动根据导入数据设置纵坐标范围，
     temp_min = 10**(math.log(min(y), 10) - 1)
     temp_max = 10**(math.log(max(y), 10) + 1)
-
     plt.ylim([temp_min, temp_max])
 
     my_x_ticks = np.arange(int(min(x)), int(max(x)) + delt_x, delt_x)
@@ -64,7 +68,7 @@ def draw_graph_csv(x, y, csvname, delt_x=20):
     # 纵轴修改为对数形式
     ax.semilogy()
 
-    # 设定图像的轴坐标名称
+    # 设定图像的轴坐标字体样式
     font1 = {'family': 'Times New Roman',
              'weight': 'normal',
              'style': 'italic',
@@ -75,9 +79,10 @@ def draw_graph_csv(x, y, csvname, delt_x=20):
     plt.ylabel('-I$_s$$_d$ (A)', font1)
 
     # 设定图像标题
-    plt.title(csvname[0:-4])
+    plt.title(csvname.split('.', 1)[0])
 
     # 这里的参数更改为图像存放位置
+    # split(str='', num=) str为分割位置，num=1为将字符串分割为两份
     plt.savefig('./Fig/CSV_Fig/' + csvname.split('.', 1)[0] + '.png', dpi=720)
     plt.show()
     plt.close()
@@ -117,6 +122,8 @@ if __name__ == '__main__':
     # for i in range(1, 82):
     #     print('%e' %float(data_file_csv[i][4]))
     csv_name = load_files()
+    # 建立一个字典储存每个文件的最大迁移率，并给出有最大迁移率的对应的文件名称
+    d = dict()
     for each_name in csv_name:
         param1, param2 = load_csv_data(each_name)
         paramI = []
@@ -127,7 +134,10 @@ if __name__ == '__main__':
         # for each in cal_deriv(param1[0:41], paramI):
         #    u.append((each * 10000)**2 / 5)
 
+        # 计算迁移率只需要考虑第一回扫压左侧部分的曲线就够
         deriv = []
+        # 此处10与41也需要更改，我觉得应该只需要改变41，
+        # 将41设定为csv文件具有有效数字行数的一半即可
         for each_result in cal_deriv(param1[10:41], paramI):
             deriv.append(abs(each_result))
         deriv.sort(reverse=True)
@@ -160,11 +170,17 @@ if __name__ == '__main__':
         I_onoff.append(math.log(param1_I[0] / param1_I[-4], 10))
         # u.sort(reverse=True)
         # 迁移率具体数值与直接用origin计算得出的结果相差一倍，无法定量分析，但是不同片子的迁移率之间相对优劣的定性分析是可行的
-        print(each_name + '前三组迁移率为:%0.2f; %0.2f, %0.2f, %0.2f, %0.2f'
+        print(each_name + '迁移率为:%0.2f; %0.2f, %0.2f, %0.2f, %0.2f'
               % (u[0], u[1], u[2], u[3], u[4]))
         print(each_name + '开关比为：%0.2f; %0.2f, %0.2f, %0.2f, %0.2f \n'
               % (I_onoff[0], I_onoff[1], I_onoff[2], I_onoff[3], I_onoff[4]))
 
         draw_graph_csv(param1, param2, each_name)
+
+        d[each_name.split('.', 1)[0]] = u[0]
+    # 将字典根据键值从大到小排列
+    print(d)
+
+
 
 
