@@ -3,14 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import math
+import easygui
 
 def load_files(path='./Data/CSV/'):
-    '''
-
-    :param path:
-    :return: files_csv
-    '''
-
     # 读取 path 下的所有文件的文件名
     files_name = os.listdir(path)
 
@@ -23,7 +18,7 @@ def load_files(path='./Data/CSV/'):
         # print(files_extension)
         if files_extension == '.csv':
             files_csv.append(each)
-
+    # 按文件名排序
     files_csv.sort()
     return files_csv
 
@@ -52,6 +47,7 @@ def draw_graph_csv(x, y, csvname, delt_x=20):
     # plt.rcParams['xtick.direction'] = 'out'  # 将x轴的刻度方向设置向内
     # plt.rcParams['ytick.direction'] = 'in'  # 将y轴的刻度方向设置向内
 
+    # 设置图像标识
     plt.plot(x, y, linestyle='--', color='green', marker='o')
 
     # 自动根据导入数据设置横坐标范围，取整然后左右移动5个单位
@@ -61,7 +57,6 @@ def draw_graph_csv(x, y, csvname, delt_x=20):
     temp_min = 10**(math.log(min(y), 10) - 1)
     temp_max = 10**(math.log(max(y), 10) + 1)
     plt.ylim([temp_min, temp_max])
-
     my_x_ticks = np.arange(int(min(x)), int(max(x)) + delt_x, delt_x)
     plt.xticks(my_x_ticks)
 
@@ -74,7 +69,6 @@ def draw_graph_csv(x, y, csvname, delt_x=20):
              'style': 'italic',
              'size': 14
              }
-
     plt.xlabel('V$_g$$_s$ (V)', font1)
     plt.ylabel('-I$_s$$_d$ (A)', font1)
 
@@ -148,13 +142,6 @@ if __name__ == '__main__':
         # u = (deriv[0]*10000)**2 / 5
         # for each in u:
         #    print(each)
-
-        # 计算得到的平均迁移率会与最大值有过大的偏差，此方法不可取
-        # sum = 0
-        # for each in u:
-        #     sum += each
-        # ave = sum/len(u)
-        # print('平均迁移率为：%0.2f' %ave)
 
         param1_I = param2.copy()
         param1_I.sort(reverse=True)
