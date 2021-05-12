@@ -109,39 +109,27 @@ def cal_deriv(x, y):  # x, y的类型均为列表
 
 if __name__ == '__main__':
 
-    # file_name = load_files()
-    # load_file_csv = open('/Users/mac/Documents/Data/CSV/20201231_1_1.csv')
-    # read_file_csv = csv.reader(load_file_csv)
-    # data_file_csv = list(read_file_csv)
-    # for i in range(1, 82):
-    #     print('%e' %float(data_file_csv[i][4]))
     csv_name = load_files()
     # 建立一个字典储存每个文件的最大迁移率，并给出有最大迁移率的对应的文件名称
     d = dict()
     for each_name in csv_name:
         param1, param2 = load_csv_data(each_name)
         paramI = []
-        # u = []
         for each_I in param2[10:41]:
             paramI.append(math.sqrt(each_I))
         # 电流开根号，对电压取微分，乘10000，平方后再除以5，选取第一遍扫的结果，选取其中最大值
-        # for each in cal_deriv(param1[0:41], paramI):
-        #    u.append((each * 10000)**2 / 5)
 
         # 计算迁移率只需要考虑第一回扫压左侧部分的曲线就够
         deriv = []
+        # 电流开根号，对电压取微分，乘10000，平方后再除以5，选取第一遍扫的结果，选取其中最大值
         # 此处10与41也需要更改，我觉得应该只需要改变41，
         # 将41设定为csv文件具有有效数字行数的一半即可
         for each_result in cal_deriv(param1[10:41], paramI):
             deriv.append(abs(each_result))
         deriv.sort(reverse=True)
-        # print(deriv[0])
         u = []
         for each_deriv in deriv:
             u.append((each_deriv * 10000) ** 2 / 5)
-        # u = (deriv[0]*10000)**2 / 5
-        # for each in u:
-        #    print(each)
 
         param1_I = param2.copy()
         param1_I.sort(reverse=True)
@@ -161,13 +149,10 @@ if __name__ == '__main__':
               % (u[0], u[1], u[2], u[3], u[4]))
         print(each_name + '开关比为：%0.2f; %0.2f, %0.2f, %0.2f, %0.2f \n'
               % (I_onoff[0], I_onoff[1], I_onoff[2], I_onoff[3], I_onoff[4]))
-
         draw_graph_csv(param1, param2, each_name)
+        d[u[0]] = each_name.split('.', 1)[0]
 
-        d[each_name.split('.', 1)[0]] = u[0]
     # 将字典根据键值从大到小排列
-    print(d)
-
-
-
+    d_sorted = sorted(d.items(), reverse=True)
+    print(f'最佳迁移率的文件名为：{d_sorted[0][1]}')
 
