@@ -170,20 +170,14 @@ if __name__ == '__main__':
         # print(each_name + '开关比为：%0.2f; %0.2f, %0.2f, %0.2f, %0.2f \n'
         #       % (I_onoff[0], I_onoff[1], I_onoff[2], I_onoff[3], I_onoff[4]))
         # draw_graph_csv(param1, param2, each_name)
-        # d[u[0]] = each_name[:-4]
+        d[u[0]] = each_name[:-4]
         each_mobility.append(u[0])
         show_file_name.append(each_name[:-4])
 
     # 将字典根据键值从大到小排列
-    # d_sorted = sorted(d.items(), reverse=True)
-    # print(f'最佳迁移率的文件名为：{d_sorted[0][1]}')
+    d_sorted = sorted(d.items(), reverse=True)
+    print(f'最佳迁移率的文件名为：{d_sorted[0][1]}')
 
-    plt.plot(show_file_name, each_mobility, linestyle='--', color='green', marker='o')
-    plt.xticks(show_file_name,show_file_name, rotation=30)  # 这里是调节横坐标的倾斜度，rotation是度数
-    # 显示柱坐标上边的数字
-    # for a, b in zip(show_file_name, each_mobility,):
-    #     plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=17)  # fontsize表示柱坐标上显示字体的大小
-    plt.show()
 
 
 
