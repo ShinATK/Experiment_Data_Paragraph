@@ -3,9 +3,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import math
-import easygui
 
-def load_files(path='./Data/CSV/'):
+
+path_set = './Data/HZ_CSV/'
+
+def load_files(path=path_set):
     # 读取 path 下的所有文件的文件名
     files_name = os.listdir(path)
 
@@ -22,7 +24,7 @@ def load_files(path='./Data/CSV/'):
     files_csv.sort()
     return files_csv
 
-def load_csv_data(filename, path='./Data/CSV/'):
+def load_csv_data(filename, path=path_set):
     load_file_csv = open(path + filename) # 打开csv文件
     read_file_csv = csv.reader(load_file_csv) # 读取csv文件
     data = list(read_file_csv)
@@ -73,11 +75,11 @@ def draw_graph_csv(x, y, csvname, delt_x=20):
     plt.ylabel('-I$_s$$_d$ (A)', font1)
 
     # 设定图像标题
-    plt.title(csvname.split('.', 1)[0])
+    plt.title(csvname[:-4])
 
     # 这里的参数更改为图像存放位置
     # split(str='', num=) str为分割位置，num=1为将字符串分割为两份
-    plt.savefig('./Fig/CSV_Fig/' + csvname.split('.', 1)[0] + '.png', dpi=720)
+    plt.savefig('./Fig/HZ_Fig/' + csvname[:-4] + '.png', dpi=720)
     plt.show()
     plt.close()
     return 0
@@ -107,9 +109,25 @@ def cal_deriv(x, y):  # x, y的类型均为列表
 
     return deriv  # 返回存储一阶导数结果的列表
 
+def text_save(filename, data):  # filename为写入CSV文件的路径，data为要写入数据列表.
+    file = open(filename, 'a')
+    # for i in range(len(data)):
+    #     s = str(data[i]).replace('[', '').replace(']', '')  # 去除[],这两行按数据不同，可以选择
+    #     s = s.replace('{', '').replace('}', '')
+    #     s = s.replace("'", '').replace(',', '') + '\n'  # 去除单引号，逗号，每行末尾追加换行符
+        # file.write(s)
+    file.write(data+'\n')
+    file.close()
+    print(filename+"保存文件成功")
+
+
 if __name__ == '__main__':
 
     csv_name = load_files()
+
+    show_file_name = []
+    each_mobility = []
+
     # 建立一个字典储存每个文件的最大迁移率，并给出有最大迁移率的对应的文件名称
     d = dict()
     for each_name in csv_name:
@@ -131,28 +149,43 @@ if __name__ == '__main__':
         for each_deriv in deriv:
             u.append((each_deriv * 10000) ** 2 / 5)
 
-        param1_I = param2.copy()
-        param1_I.sort(reverse=True)
-        param2_I = param2[10:41].copy()
-        param2_I.sort(reverse=True)
-
-        I_onoff = []
-        I_onoff.append(math.log(param2_I[0] / param2_I[-1], 10))
-
-        I_onoff.append(math.log(param1_I[0] / param1_I[-1], 10))
-        I_onoff.append(math.log(param1_I[0] / param1_I[-2], 10))
-        I_onoff.append(math.log(param1_I[0] / param1_I[-3], 10))
-        I_onoff.append(math.log(param1_I[0] / param1_I[-4], 10))
+        # param1_I = param2.copy()
+        # param1_I.sort(reverse=True)
+        # param2_I = param2[10:41].copy()
+        # param2_I.sort(reverse=True)
+        #
+        # I_onoff = []
+        # I_onoff.append(math.log(param2_I[0] / param2_I[-1], 10))
+        #
+        # I_onoff.append(math.log(param1_I[0] / param1_I[-1], 10))
+        # I_onoff.append(math.log(param1_I[0] / param1_I[-2], 10))
+        # I_onoff.append(math.log(param1_I[0] / param1_I[-3], 10))
+        # I_onoff.append(math.log(param1_I[0] / param1_I[-4], 10))
         # u.sort(reverse=True)
         # 迁移率具体数值与直接用origin计算得出的结果相差一倍，无法定量分析，但是不同片子的迁移率之间相对优劣的定性分析是可行的
+        list_temp = f'{each_name} 迁移率为 {u[0]:.2f}, {u[1]:.2f}, {u[2]:.2f}, {u[3]:.2f}, {u[4]:.2f}'
         print(each_name + '迁移率为:%0.2f; %0.2f, %0.2f, %0.2f, %0.2f'
               % (u[0], u[1], u[2], u[3], u[4]))
-        print(each_name + '开关比为：%0.2f; %0.2f, %0.2f, %0.2f, %0.2f \n'
-              % (I_onoff[0], I_onoff[1], I_onoff[2], I_onoff[3], I_onoff[4]))
-        draw_graph_csv(param1, param2, each_name)
-        d[u[0]] = each_name.split('.', 1)[0]
+        text_save('./Data/HZ_CSV/mobility.txt', list_temp)
+        # print(each_name + '开关比为：%0.2f; %0.2f, %0.2f, %0.2f, %0.2f \n'
+        #       % (I_onoff[0], I_onoff[1], I_onoff[2], I_onoff[3], I_onoff[4]))
+        # draw_graph_csv(param1, param2, each_name)
+        # d[u[0]] = each_name[:-4]
+        each_mobility.append(u[0])
+        show_file_name.append(each_name[:-4])
 
     # 将字典根据键值从大到小排列
-    d_sorted = sorted(d.items(), reverse=True)
-    print(f'最佳迁移率的文件名为：{d_sorted[0][1]}')
+    # d_sorted = sorted(d.items(), reverse=True)
+    # print(f'最佳迁移率的文件名为：{d_sorted[0][1]}')
+
+    plt.plot(show_file_name, each_mobility, linestyle='--', color='green', marker='o')
+    plt.xticks(show_file_name,show_file_name, rotation=30)  # 这里是调节横坐标的倾斜度，rotation是度数
+    # 显示柱坐标上边的数字
+    # for a, b in zip(show_file_name, each_mobility,):
+    #     plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=17)  # fontsize表示柱坐标上显示字体的大小
+    plt.show()
+
+
+
+
 
