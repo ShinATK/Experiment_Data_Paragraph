@@ -5,7 +5,7 @@ import os
 import math
 
 
-path_set = './Data/HZ_CSV/'
+path_set = 'Data/HZ_CSV/'
 
 def load_files(path=path_set):
     # 读取 path 下的所有文件的文件名
@@ -166,7 +166,7 @@ if __name__ == '__main__':
         list_temp = f'{each_name} 迁移率为 {u[0]:.2f}, {u[1]:.2f}, {u[2]:.2f}, {u[3]:.2f}, {u[4]:.2f}'
         print(each_name + '迁移率为:%0.2f; %0.2f, %0.2f, %0.2f, %0.2f'
               % (u[0], u[1], u[2], u[3], u[4]))
-        text_save(f'./Data/HZ_CSV/mobility.txt', list_temp)
+        text_save(f'Data/HZ_CSV/mobility.txt', list_temp)
         # print(each_name + '开关比为：%0.2f; %0.2f, %0.2f, %0.2f, %0.2f \n'
         #       % (I_onoff[0], I_onoff[1], I_onoff[2], I_onoff[3], I_onoff[4]))
         # draw_graph_csv(param1, param2, each_name, u[0])
