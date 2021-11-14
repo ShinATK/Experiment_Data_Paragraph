@@ -13,13 +13,14 @@ Vd = -20
 Isd_results = {}
 Isd = []
 
-ds = [3, 6, 9, 12]
-Vg = np.arange(-40, 20, 0.1)
+ds = [None, 3, 6, 9, 12]
+Vg = np.arange(-60, 20, 0.1)
+delta_Vg = 80
 # Vt = np.arange(0, 5, 1)
-Vt = [4.1, 8.1, 12.2, 16.2]
+Vt = [0, -60+delta_Vg*0.5, -60+delta_Vg*0.65, -60+delta_Vg*0.8, -60+delta_Vg*0.95]
 
 def Vg_range(Vt):
-    return np.arange(-40, Vt, 0.1)
+    return np.arange(-60, Vt, 0.1)
 
 def linear_curve(Vg, Vt):
     Isd=A*((Vg-Vt)*Vd - 0.5*Vd**2)
@@ -43,6 +44,7 @@ for each_Vt in Vt:
 
 
     Isd_results[each_Vt] = Isd
+    np.savetxt(f"阈值电压为{each_Vt}的转移曲线电流.txt", Isd, fmt="%0.12f")
     Isd = []
 
 plt.subplot()
