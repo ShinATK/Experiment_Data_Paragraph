@@ -5,7 +5,7 @@ import os
 import math
 
 
-path_set = 'Data/HZ_CSV/'
+path_set = 'Data/'
 
 def load_files(path=path_set):
     # 读取 path 下的所有文件的文件名
@@ -79,7 +79,7 @@ def draw_graph_csv(x, y, csvname, mobility, delt_x=20):
 
     # 这里的参数更改为图像存放位置
     # split(str='', num=) str为分割位置，num=1为将字符串分割为两份
-    plt.savefig('./Fig/HZ_Fig/' + csvname[:-4] + '.png', dpi=720)
+    plt.savefig('./Fig/' + csvname[:-4] + '.png', dpi=720)
     plt.show()
     plt.close()
     return 0
@@ -166,17 +166,17 @@ if __name__ == '__main__':
         list_temp = f'{each_name} 迁移率为 {u[0]:.2f}, {u[1]:.2f}, {u[2]:.2f}, {u[3]:.2f}, {u[4]:.2f}'
         print(each_name + '迁移率为:%0.2f; %0.2f, %0.2f, %0.2f, %0.2f'
               % (u[0], u[1], u[2], u[3], u[4]))
-        text_save(f'Data/HZ_CSV/mobility.txt', list_temp)
+        text_save(f'Data/mobility.txt', list_temp)
         # print(each_name + '开关比为：%0.2f; %0.2f, %0.2f, %0.2f, %0.2f \n'
         #       % (I_onoff[0], I_onoff[1], I_onoff[2], I_onoff[3], I_onoff[4]))
-        # draw_graph_csv(param1, param2, each_name, u[0])
+        draw_graph_csv(param1, param2, each_name, u[0])
         d[u[0]] = each_name[:-4]
         each_mobility.append(u[0])
         show_file_name.append(each_name[:-4])
 
-    # 将字典根据键值从大到小排列
-    d_sorted = sorted(d.items(), reverse=True)
-    print(f'最佳迁移率的文件名为：{d_sorted[0][1]}')
+    # # 将字典根据键值从大到小排列
+    # d_sorted = sorted(d.items(), reverse=True)
+    # print(f'最佳迁移率的文件名为：{d_sorted[0][1]}')
 
 
 
