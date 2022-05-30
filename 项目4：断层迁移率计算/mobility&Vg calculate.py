@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
     csv_name = load_files()
     csv_name.sort()
-    filename = '20220511 PCDTPT Point 09'
+    filename = '20220511 PCDTPT Point 01'
 
     e=1.6e-19
     L=3e-4 # 300μm
@@ -88,14 +88,19 @@ if __name__ == '__main__':
     start_point = 0
     end_point = 60
 
+    i = 0
+    count = len(csv_name)
+
     for each_name in csv_name:
 
-        print(f'Running {filename} {each_name}...')
+        i += 1
+        print(f'({i}/{count})Running {filename} {each_name}...')
 
         paramV, paramI, data = load_csv_data(each_name)
 
         # plt.plot(paramV[35:45], paramI[35:45], label=each_name[:-4])
-
+        fig1, ax = plt.subplots(1, 1)
+        ax.semilogy()
         plt.plot(paramV[start_point:end_point], paramI[start_point:end_point], label=each_name[:-4])
         font = {'family': 'Times New Roman',
                  'weight': 'normal',
@@ -109,6 +114,7 @@ if __name__ == '__main__':
         plt.tight_layout()
         plt.savefig('./Data/' + f'线性区 Trans_Curve {filename} ' + each_name[:-4] + '.png', dpi=720)
         # plt.show()
+        plt.close()
 
 
         k = cal_deriv(paramV[start_point:end_point], paramI[start_point:end_point])
@@ -116,7 +122,7 @@ if __name__ == '__main__':
         A = 1.7e6
 
         mobility = abs(A*np.array(k))
-        fig, ax = plt.subplots(1, 1)
+        fig2, ax = plt.subplots(1, 1)
         plt.plot(paramV[start_point:end_point], mobility, marker='o', label=each_name[:-4])
         font = {'family': 'Times New Roman',
                 'weight': 'normal',
@@ -131,5 +137,6 @@ if __name__ == '__main__':
         plt.tight_layout()
         plt.savefig('./Data/' + f'线性区 mobility {filename} ' + each_name[:-4] + '.png', dpi=720)
         # plt.show()
+        plt.close()
 
     print('Program end!')
