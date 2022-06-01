@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
     csv_name = load_files()
     csv_name.sort()
-    filename = '20220511 PCDTPT Point 01'
+    filename = '20220525 DPPDTT'
 
     e=1.6e-19
     L=3e-4 # 300μm
@@ -112,7 +112,7 @@ if __name__ == '__main__':
         plt.legend()
         plt.title(f'Trans Curve {each_name[:-4]}')
         plt.tight_layout()
-        plt.savefig('./Data/' + f'线性区 Trans_Curve {filename} ' + each_name[:-4] + '.png', dpi=720)
+        # plt.savefig('./Data/' + f'线性区 Trans_Curve {filename} ' + each_name[:-4] + '.png', dpi=720)
         # plt.show()
         plt.close()
 
@@ -132,11 +132,10 @@ if __name__ == '__main__':
         ax.semilogy()
         plt.xlabel('V$_g$ (V)', font)
         plt.ylabel('mobility (cm$^2$/V$^-$$^1$s$^-$$^1$)', font)
-        plt.legend()
         plt.title(f'Mobility {each_name[:-4]}')
+        plt.legend()
         plt.tight_layout()
-        plt.savefig('./Data/' + f'线性区 mobility {filename} ' + each_name[:-4] + '.png', dpi=720)
-        # plt.show()
-        plt.close()
+        # plt.savefig('./Data/' + f'线性区 mobility {filename} ' + each_name[:-4] + '.png', dpi=720)
+        plt.show()
 
     print('Program end!')
