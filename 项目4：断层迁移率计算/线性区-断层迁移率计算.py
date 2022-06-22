@@ -4,7 +4,6 @@ import numpy as np
 import os
 import math
 
-
 path_set = 'Data/'
 
 def load_files(path=path_set):
@@ -128,141 +127,75 @@ if __name__ == '__main__':
     csv_name.sort()
     filename = '20220526 DPP-DTT 2.3'
 
-    i = 0
-
     e=1.6e-19
     L=3e-4 # 300μm
     W=3e-3 # 3mm
     C=11.9e-9 # F
     Vsd=-5 # V
     d=1e-8 # 10nm
-
-    # edging_times = len(csv_name)
-    edging_times = len(csv_name)-1
-
-    end_time = 5*len(csv_name)
+    edging_times = len(csv_name)
     delta_d = d/edging_times
-
-    k=dict()
-    k_list=[]
-
-    G=dict()
-    G_list=[]
-    G_layer=[]
-
-    n=dict()
-    n_list=[]
-    n_layer=[]
-
-    N=dict()
-    N_list=[]
-    N_layer=[]
-
-    sigma=dict()
-    sigma_list=[]
-
-    mobility=dict()
-    mobility_list=[]
-    mobility_layer=[]
 
     V_range = np.array([])
     point_pick = 30 # 取值 30
     start_point = 0
     end_point = 60
 
-    for each_name in csv_name:
+    k = dict()
+    k_list = []
 
+    G = dict()
+    G_list = []
+
+    n = dict()
+    n_list = []
+
+    N = dict()
+    N_list = []
+
+    mobility = dict()
+    mobility_list = []
+
+    i = 0
+    A_list = []
+    B = abs(L/(W*C*Vsd))
+
+    for each_name in csv_name:
+        A = abs(L / (W * (d-i*delta_d) * e))
+        A_list.append(A)
         paramV, paramI, data = load_csv_data(each_name)
         V_range = paramV
 
-        k[each_name[:-4]] = cal_deriv(paramV[:end_point], paramI[:end_point])[point_pick]
+        k[each_name[:-4]]=abs(cal_deriv(paramV[:end_point], paramI[:end_point])[point_pick])
         k_list.append(float(k[each_name[:-4]]))
 
-        A = L*1e-4 / (W * C * Vsd)
-        mobility[each_name[:-4]]=abs(A*k[each_name[:-4]])
-        mobility_list.append(float(mobility[each_name[:-4]]))
+        mobility[each_name[:-4]] = B*k[each_name[:-4]]
+        mobility_list.append(mobility[each_name[:-4]])
 
-        G[each_name[:-4]] = abs(paramI[:end_point][point_pick] / Vsd)
+        G[each_name[:-4]] = abs(paramI[:end_point][point_pick]/Vsd)
         G_list.append(G[each_name[:-4]])
 
-        sigma[each_name[:-4]] = G[each_name[:-4]] * L / (W*((d-i*delta_d)))
-        sigma_list.append(sigma[each_name[:-4]])
-
-        N[each_name[:-4]] = L**2*G[each_name[:-4]] / (e * mobility[each_name[:-4]])
-        N_list.append(N[each_name[:-4]])
-
-        n[each_name[:-4]] = sigma[each_name[:-4]] / (e * mobility[each_name[:-4]])
+        n[each_name[:-4]] = A*G[each_name[:-4]]/mobility[each_name[:-4]]
         n_list.append(n[each_name[:-4]])
+
+        N[each_name[:-4]] = n[each_name[:-4]] * (d-i*delta_d)
+        N_list.append(N[each_name[:-4]])
 
         i += 1
 
-        # plt.plot(paramV[35:45], paramI[35:45], label=each_name[:-4])
-        plt.plot(paramV[start_point:end_point], paramI[start_point:end_point], label=each_name[:-4])
-
-    plt.axvline(x=V_range[point_pick], ls='--', c='red')
-
-    font = {'family': 'Times New Roman',
-             'weight': 'normal',
-             'style': 'italic',
-             'size': 14
-             }
-    plt.xlabel('V$_g$ (V)', font)
-    plt.ylabel('-I$_s$$_d$ (A)', font)
-    plt.legend()
-    # plt.title(each_name[:-4])
-    plt.tight_layout()
-    plt.savefig('./Data/' + f'线性区 Trans_Curve {filename}' + '.png', dpi=720)
-    plt.show()
-
-    # 这里的计算过程需要修改
-    for i in range(len(N_list)-1):
-        N_layer.append(abs(N_list[i]-N_list[i+1]))
-        G_layer.append(abs(G_list[i]-G_list[i+1]))
-        mobility_layer.append(L**2*G_layer[-1]/(e*N_layer[-1]))
-
-        n_layer.append(abs(N_layer[-1]/(W*L*delta_d)))
-
-    t1=range(0, end_time, 5)
-
     plt.subplot(2, 2, 1)
-    plt.plot(t1, G_list, label='G')
+    plt.plot(G_list, label='G')
     plt.legend()
-    plt.xticks(t1)
     plt.subplot(2, 2, 2)
-    plt.plot(t1, [each*1e4 for each in mobility_list], label='mobility(cm$^2$V$^-$$^1$s$^-$$^1$)')
+    plt.plot(mobility_list, label='mobility')
     plt.legend()
-    plt.xticks(t1)
     plt.subplot(2, 2, 3)
-    plt.plot(t1, N_list, label='N')
+    plt.plot(n_list, label='n')
     plt.legend()
-    plt.xticks(t1)
     plt.subplot(2, 2, 4)
-    plt.plot(t1, n_list, label='n')
+    plt.plot(N_list, label='N')
     plt.legend()
-    plt.suptitle('Linear region each left')
-    plt.xticks(t1)
     plt.tight_layout()
-    plt.savefig('./Data/' + f'线性区 each_left {filename}' + '.png', dpi=720)
+    plt.savefig('./data/断层迁移率计算（电导，迁移率，电荷密度，总电荷量）.png', dpi=720)
     plt.show()
 
-    t2=range(1, len(csv_name))
-    plt.subplot(2, 2, 1)
-    plt.plot(t2, G_layer, label='G_layer')
-    plt.legend()
-    plt.xticks(t2)
-    plt.subplot(2, 2, 2)
-    plt.plot(t2, [each*1e4 for each in mobility_layer], label='mobility_layer(cm$^2$V$^-$$^1$s$^-$$^1$)')
-    plt.legend()
-    plt.xticks(t2)
-    plt.subplot(2, 2, 3)
-    plt.plot(t2, N_layer, label='N_layer')
-    plt.legend()
-    plt.xticks(t2)
-    plt.subplot(2, 2, 4)
-    plt.plot(t2, n_layer, label='n_layer')
-    plt.legend()
-    plt.xticks(t2)
-    plt.suptitle('Linear region each layer')
-    plt.tight_layout()
-    plt.savefig('./Data/' + f'线性区 each_layer {filename}' + '.png', dpi=720)
-    plt.show()
