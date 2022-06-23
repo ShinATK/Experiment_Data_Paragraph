@@ -182,7 +182,22 @@ if __name__ == '__main__':
         N_list.append(N[each_name[:-4]])
 
         i += 1
+        plt.plot(paramV[start_point:end_point], paramI[start_point:end_point], label=each_name[:-4])
+    plt.axvline(x=V_range[point_pick], ls='--', c='red')
+    font = {'family': 'Times New Roman',
+             'weight': 'normal',
+             'style': 'italic',
+             'size': 14
+             }
+    plt.xlabel('V$_g$ (V)', font)
+    plt.ylabel('-I$_s$$_d$ (A)', font)
+    plt.legend()
+    # plt.title(each_name[:-4])
+    plt.tight_layout()
+    plt.savefig('./Data/' + f'线性区 Trans_Curve {filename}' + '.png', dpi=720)
+    plt.show()
 
+    # 断层计算：电导，迁移率，电荷密度，总电荷量
     plt.subplot(2, 2, 1)
     plt.plot(G_list, label='G')
     plt.legend()
@@ -198,4 +213,9 @@ if __name__ == '__main__':
     plt.tight_layout()
     plt.savefig('./data/断层迁移率计算（电导，迁移率，电荷密度，总电荷量）.png', dpi=720)
     plt.show()
+
+    text_save('断层迁移率计算 电导.txt', G_list)
+    text_save('断层迁移率计算 迁移率.txt', mobility_list)
+    text_save('断层迁移率计算 电荷密度.txt', n_list)
+    text_save('断层迁移率计算 总电荷量.txt', N_list)
 
